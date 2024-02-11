@@ -2,7 +2,7 @@
 $(function () {
   const amenities = {};
 
-  /* if the checkbox are already checked and uncheck them */
+  /* if the checkboxs are already checked uncheck them */
   $('.popover li input').each(function () {
     if (this.checked) {
       this.checked = false;
@@ -29,16 +29,30 @@ $(function () {
     }
   });
 
+  /* Get all places */
+  placesFilters();
+
+  /* Get places based on amenities filter when button clicked */
+  $('button').on('click', function () {
+    /* remove all children from places first */
+    $('.places').empty();
+
+    placesFilters({ amenities: Object.keys(amenities) });
+  });
+});
+
+/* make a request to get the places based on amenities */
+function placesFilters (amenitiesIds = {}) {
   $.ajax({
     url: 'http://0.0.0.0:5001/api/v1/places_search/',
     type: 'POST',
     contentType: 'application/json', // Specify content type as JSON
-    data: JSON.stringify({}), // Send an empty JSON object as the data
+    data: JSON.stringify(amenitiesIds), // Send an empty JSON object as the data
     success: function (response) {
       response.forEach(place => createPlace(place));
     }
   });
-});
+}
 
 /* a function to create a place article */
 function createPlace (place) {
